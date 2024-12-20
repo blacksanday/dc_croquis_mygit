@@ -13,7 +13,7 @@ export default function Time({ onTimeSelect }) {
     <div>
       <h3>Select Time:</h3>
       <div style={{ display: "flex", gap: "10px" }}>
-        {["10s", "20s", "30s"].map((time) => (
+        {["30s", "60s", "120s"].map((time) => (
           <button
             key={time}
             onClick={() => handleTimeClick(time)}
