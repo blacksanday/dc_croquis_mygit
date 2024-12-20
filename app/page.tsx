@@ -1,35 +1,53 @@
 // app/page.js
-import Link from "next/link";
+"use client";
+
 import { useState } from "react";
 import Level from "./home_components/level";
 import Time from "./home_components/time";
 import Report from "./home_components/report";
+import { useRouter } from "next/navigation"; // Next.js の useRouter を使用
 
 export default function Home() {
-  const [selectedLevel, setSelectedLevel] = useState(null); // レベル選択状態
-  const [selectedTime, setSelectedTime] = useState(null); // タイム選択状態
+  const [selectedLevel, setSelectedLevel] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(null);
+  const router = useRouter(); // ルーターを初期化
 
-  const isFormComplete = selectedLevel && selectedTime; // 両方が選択されているか確認
+  const isFormComplete = selectedLevel && selectedTime;
+
+  const handleStartClick = () => {
+    if (isFormComplete) {
+      router.push(`/croquis?level=${selectedLevel}&time=${selectedTime}`);
+    }
+  };
 
   return (
     <div>
       <h1>Welcome to Croquis</h1>
       <p>This is your new home page!</p>
+
       <Level onLevelSelect={setSelectedLevel} />
       <Time onTimeSelect={setSelectedTime} />
-      <Report />
-      <Link
-        href={isFormComplete ? "croquis/" : "#"}
-        onClick={(e) => {
-          if (!isFormComplete) {
-            e.preventDefault();
-            alert("Please select both level and time before proceeding.");
-          }
+      
+      <button
+        onClick={handleStartClick}
+        disabled={!isFormComplete}
+        style={{
+          padding: "10px 20px",
+          marginTop: "20px",
+          backgroundColor: isFormComplete ? "blue" : "gray",
+          color: "white",
+          border: "none",
+          borderRadius: "5px",
+          cursor: isFormComplete ? "pointer" : "not-allowed",
         }}
       >
-        Go to Croquis Page
-      </Link>
-      <p></p>
+        Start Croquis !
+      </button>
+
+
+      <Report />
+
+
     </div>
   );
 }

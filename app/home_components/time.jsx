@@ -1,19 +1,35 @@
 // home_components/time.js
+import { useState } from "react";
+
 export default function Time({ onTimeSelect }) {
-    const handleTimeChange = (event) => {
-      onTimeSelect(event.target.value); // 選択された時間を親に伝える
-    };
-  
-    return (
-      <div>
-        <label htmlFor="time">Select Time:</label>
-        <select id="time" onChange={handleTimeChange}>
-          <option value="">-- Select Time --</option>
-          <option value="30s">30 seconds</option>
-          <option value="1m">1 minute</option>
-          <option value="5m">5 minutes</option>
-        </select>
+  const [selectedTime, setSelectedTime] = useState(null); // 選択状態を管理
+
+  const handleTimeClick = (time) => {
+    setSelectedTime(time); // 選択されたタイムを更新
+    onTimeSelect(time); // 親コンポーネントに通知
+  };
+
+  return (
+    <div>
+      <h3>Select Time:</h3>
+      <div style={{ display: "flex", gap: "10px" }}>
+        {["10s", "20s", "30s"].map((time) => (
+          <button
+            key={time}
+            onClick={() => handleTimeClick(time)}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: selectedTime === time ? "blue" : "lightgray",
+              color: selectedTime === time ? "white" : "black",
+              border: "1px solid gray",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            {time}
+          </button>
+        ))}
       </div>
-    );
-  }
-  
+    </div>
+  );
+}
