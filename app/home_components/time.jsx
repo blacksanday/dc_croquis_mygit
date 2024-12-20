@@ -19,7 +19,7 @@ export default function Time({ onTimeSelect }) {
             onClick={() => handleTimeClick(time)}
             style={{
               padding: "10px 20px",
-              backgroundColor: selectedTime === time ? "blue" : "lightgray",
+              backgroundColor: selectedTime === time ? "#8a2be2" : "lightgray",
               color: selectedTime === time ? "white" : "black",
               border: "1px solid gray",
               borderRadius: "5px",

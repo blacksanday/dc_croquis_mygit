@@ -19,7 +19,7 @@ export default function Level({ onLevelSelect }) {
             onClick={() => handleLevelClick(level)}
             style={{
               padding: "10px 20px",
-              backgroundColor: selectedLevel === level ? "blue" : "lightgray",
+              backgroundColor: selectedLevel === level ? "#008000" : "lightgray",
               color: selectedLevel === level ? "white" : "black",
               border: "1px solid gray",
               borderRadius: "5px",
