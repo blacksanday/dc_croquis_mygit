@@ -13,7 +13,7 @@ const DrawingApp = () => {
 
   // 難易度別の画像
   const difficultyImages = {
-    beginner: "/images/beginner1.jpg",  // 画像のパスを修正
+    beginner: "/beginner1.jpg",  // 画像のパスを修正
   };
 
   // キャンバス初期化
@@ -26,7 +26,7 @@ const DrawingApp = () => {
     context.strokeStyle = "black";
     context.lineWidth = 3;
     contextRef.current = context;
-    setRandomImage("/images/beginner1.jpg"); // 初期画像を設定
+    setRandomImage("/beginner1.jpg"); // 初期画像を設定
   }, []);
 
   // 描画開始
@@ -53,7 +53,7 @@ const DrawingApp = () => {
 
   // 難易度に基づく画像の選択
   const selectImageByDifficulty = (level) => {
-    return difficultyImages[level] || "/images/beginner.jpg"; // プレースホルダーを返す
+    return difficultyImages[level] || "/beginner.jpg"; // プレースホルダーを返す
   };
 
   // ゲーム開始
