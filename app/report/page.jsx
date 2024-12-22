@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 export default function Report() {
     const [logs, setLogs] = useState([]); // ログデータを格納
+    const [userId, setUserId] = useState(""); // ユーザーIDを格納
 
     // IndexedDBからログを取得する関数
     const fetchLogs = async () => {
@@ -18,7 +19,13 @@ export default function Report() {
 
             getAllRequest.onsuccess = function (event) {
                 const data = event.target.result;
-                setLogs(data); // ログデータを状態に保存
+                if (userId) {
+                    // ユーザーIDでフィルタリング
+                    const filteredLogs = data.filter(log => log.userId === userId);
+                    setLogs(filteredLogs);
+                } else {
+                    setLogs(data); // ログデータを状態に保存
+                }
             };
 
             getAllRequest.onerror = function () {
@@ -34,11 +41,24 @@ export default function Report() {
     // 初回レンダリング時にログを取得
     useEffect(() => {
         fetchLogs();
-    }, []);
+    }, [userId]);
 
     return (
         <div>
             <h1>This is Report Hierarchy page</h1>
+
+            <div>
+                <label>
+                    ユーザーIDでフィルタ:
+                    <input
+                        type="text"
+                        value={userId}
+                        onChange={(e) => setUserId(e.target.value)}
+                        placeholder="ユーザーIDを入力"
+                    />
+                </label>
+                <button onClick={fetchLogs}>フィルタを適用</button>
+            </div>
 
             {/* ログデータの表示 */}
             <div style={{ marginTop: "20px" }}>
@@ -48,9 +68,9 @@ export default function Report() {
                         {logs.map((log, index) => (
                             <li key={index} style={{ marginBottom: "10px" }}>
                                 <strong>ユーザーID:</strong> {log.userId} <br />
+                                <strong>類似度スコア:</strong> {log.similarityScore}% <br />
                                 <strong>経験値:</strong> {log.experience} <br />
                                 <strong>レベル:</strong> {log.level} <br />
-                                <strong>称号:</strong> {log.title} <br />
                                 <strong>タイマー値:</strong> {log.timeElapsed}秒 <br />
                                 <strong>保存時間:</strong> {log.timestamp} <br />
                             </li>
