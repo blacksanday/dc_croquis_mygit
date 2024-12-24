@@ -68,6 +68,16 @@ const DrawingApp = () => {
     context.clearRect(0, 0, canvas.width, canvas.height);
   };
 
+  const resetGame = () => {
+    setTimeLeft(60);
+    setScore("-");
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    setIsGameActive(false);
+    alert("ゲームをリセットしました！");
+  };
+
   const calculateSimilarity = (image1, canvas) => {
     const canvas1 = document.createElement("canvas");
     const ctx1 = canvas1.getContext("2d");
@@ -99,33 +109,70 @@ const DrawingApp = () => {
     const scorePercentage = Math.round(similarity * 100);
     setScore(scorePercentage);
 
-    const experience = Math.floor(scorePercentage / 20);
+    const newExperience = scorePercentage / 10; // 類似度 * 1/10
     const timestamp = new Date().toISOString();
-    const level = experience < 10 ? 1 : experience < 100 ? 2 : 3;
 
-    const dbRequest = indexedDB.open("ProgressDB", 1);
+    const dbRequest = indexedDB.open("ProgressDB", 2);
     dbRequest.onupgradeneeded = function (event) {
       const db = event.target.result;
-      db.createObjectStore("progress", { keyPath: "id", autoIncrement: true });
+      if (!db.objectStoreNames.contains("progress")) {
+        db.createObjectStore("progress", { keyPath: "id", autoIncrement: true });
+        console.log("ObjectStore 'progress' created.");
+      }
     };
 
     dbRequest.onsuccess = function (event) {
       const db = event.target.result;
+      if (!db.objectStoreNames.contains("progress")) {
+        console.error("ObjectStore 'progress' does not exist.");
+        return;
+      }
       const transaction = db.transaction("progress", "readwrite");
       const store = transaction.objectStore("progress");
 
-      store.add({
-        userId,
-        similarityScore: scorePercentage,
-        timeElapsed: 60 - timeLeft,
-        experience,
-        timestamp,
-        level,
-      });
+      const getRequest = store.getAll();
 
-      alert("データが保存されました！");
+      getRequest.onsuccess = function (event) {
+        const data = event.target.result;
+        const userData = data.find((item) => item.userId === userId);
+
+        let totalExperience = newExperience;
+        let newLevel = 0;
+
+        if (userData) {
+          // 累積経験値を計算
+          totalExperience += userData.experience;
+
+          // レベル判定
+          if (totalExperience >= 1000) {
+            newLevel = 3;
+          } else if (totalExperience >= 100) {
+            newLevel = 2;
+          } else if (totalExperience >= 10) {
+            newLevel = 1;
+          }
+        } else {
+          // 新しいデータの場合
+          newLevel = newExperience >= 10 ? 1 : 0;
+        }
+
+        // 新しいデータを保存
+        store.put({
+          ...(userData ? { id: userData.id } : {}), // 既存データの場合のみ id を設定
+          userId,
+          similarityScore: scorePercentage,
+          timeElapsed: 60 - timeLeft,
+          experience: totalExperience,
+          timestamp,
+          level: newLevel,
+        });
+
+        alert(`データが保存されました！現在のレベル: ${newLevel}`);
+        resetGame(); // 提出後にリセットを実行
+      };
     };
   };
+
 
   return (
     <div style={{ padding: "20px" }}>
