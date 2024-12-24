@@ -8,7 +8,7 @@ export default function Report() {
 
     // IndexedDBからログを取得する関数
     const fetchLogs = async () => {
-        const dbRequest = indexedDB.open("ProgressDB", 1);
+        const dbRequest = indexedDB.open("ProgressDB", 2);
 
         dbRequest.onsuccess = function (event) {
             const db = event.target.result;
